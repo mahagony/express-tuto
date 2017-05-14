@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const fs = require("fs");
 const multer = require("multer");
 
@@ -8,10 +9,12 @@ const app = express();
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(multer({dest: "/tmp/"}).any());
+app.use(cookieParser());
 
 // This responds with "Hello World" on the homepage
 app.get("/", (req, res) => {
 	console.log("Got a GET request for the homepage");
+	console.log("Cookies: ", req.cookies);
 	res.send("Hello World\n");
 });
 

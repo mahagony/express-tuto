@@ -1,4 +1,6 @@
 const express = require("express");
+const bodyParser = require("body-parser");
+
 const app = express();
 
 app.use(express.static("public"));
@@ -37,7 +39,7 @@ app.get("/index.html", (req, res) => {
 	res.sendFile(__dirname + "/" + "index.html");
 });
 
-app.get("/process_get", (req, res) => {
+app.get("/process", (req, res) => {
 	// Prepare output in JSON format
 	response = {
 		first_name: req.query.first_name,
@@ -46,6 +48,20 @@ app.get("/process_get", (req, res) => {
 	console.log(response);
 	res.end(JSON.stringify(response));
 });
+
+// Create application/x-www-form-urlencoded parser
+const urlencodedParser = bodyParser.urlencoded({extended: false});
+
+app.post("/process", urlencodedParser, (req, res) => {
+	// Prepare output in JSON format
+	response = {
+		first_name: req.body.first_name,
+		last_name: req.body.last_name,
+	};
+	console.log(response);
+	res.end(JSON.stringify(response));
+});
+
 
 const server = app.listen(8081, () => {
 	let host = server.address().address;

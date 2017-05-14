@@ -96,6 +96,48 @@ app.post("/file_upload", (req, res) => {
 	});
 });
 
+app.get("/listUsers", (req, res) => {
+	fs.readFile(__dirname + "/" + "users.json", "utf8", (err, data) => {
+		console.log(data);
+		res.end(data);
+	});
+});
+
+app.post("/addUser", bodyParser.json({type: "application/json"}), (req, res) => {
+	console.log("url : " + req.url);
+	console.log("headers :" + JSON.stringify(req.headers));
+	console.log("query :" + JSON.stringify(req.query));
+	console.log("body :" + JSON.stringify(req.body));
+	user = req.body;
+
+	// First read existing users
+	fs.readFile(__dirname + "/" + "users.json", "utf8", (err, data) => {
+		data = JSON.parse(data);
+		data["user" + user.id] = user;
+		console.log(data);
+		res.end(JSON.stringify(data));
+	});
+});
+
+app.get("/:id", (req, res) => {
+	// First read existing users.
+	fs.readFile(__dirname + "/" + "users.json", "utf8", (err, data) => {
+		users = JSON.parse(data);
+		let user = users["user" + req.params.id];
+		console.log(user);
+		res.end(JSON.stringify(user));
+	});
+});
+
+app.delete("/deleteUser/:id", (req, res) => {
+	// First read existing users.
+	fs.readFile(__dirname + "/" + "users.json", "utf8", (err, data) => {
+		users = JSON.parse(data);
+		delete users["user" + req.params.id];
+		console.log(users);
+		res.end(JSON.stringify(users));
+	});
+});
 
 const server = app.listen(8081, () => {
 	let host = server.address().address;

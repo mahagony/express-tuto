@@ -1,9 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const fs = require("fs");
+const multer = require("multer");
 
 const app = express();
 
 app.use(express.static("public"));
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(multer({dest: "/tmp/"}).any());
 
 // This responds with "Hello World" on the homepage
 app.get("/", (req, res) => {
@@ -60,6 +64,33 @@ app.post("/process", urlencodedParser, (req, res) => {
 	};
 	console.log(response);
 	res.end(JSON.stringify(response));
+});
+
+app.get("/uploadfile.html", (req, res) => {
+	res.sendFile(__dirname + "/" + "uploadfile.html");
+});
+
+app.post("/file_upload", (req, res) => {
+//	console.log(req);
+	console.log(req.files[0].originalname);
+	console.log(req.files[0].path);
+	console.log(req.files[0].mimetype);
+	let file = __dirname + "/" + req.files[0].originalname;
+
+	fs.readFile(req.files[0].path, (err, data) => {
+		fs.writeFile(file, data, (err) => {
+			if(err) {
+				console.log(err);
+			} else {
+				response = {
+					message: "File uploaded successfully",
+					filename: req.files[0].originalname,
+				};
+			}
+			console.log(response);
+			res.end(JSON.stringify(response));
+		});
+	});
 });
 
 
